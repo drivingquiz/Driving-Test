@@ -1,0 +1,354 @@
+﻿
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driving Test</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #061a38;
+            --blue: #0c2b52;
+            --yellow: #ffc107;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: var(--navy);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        .hero {
+            min-height: 510px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 35px 20px 75px;
+            background: linear-gradient( 90deg, rgba(4, 19, 43, .55), rgba(4, 19, 43, .80) ), url("baground.png") center/cover no-repeat;
+            border-bottom: 5px solid var(--yellow);
+            border-radius: 0 0 50% 8%;
+        }
+
+        .hero-content {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .logo {
+            width: 85px;
+            height: 85px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+
+        .brand {
+            font-size: clamp(38px, 6vw, 70px);
+            font-weight: 900;
+            direction: ltr;
+            margin-bottom: 22px;
+        }
+
+            .brand span {
+                color: var(--yellow);
+            }
+
+        .teacher {
+            font-size: clamp(15px, 2.5vw, 21px);
+            line-height: 2;
+            margin-bottom: 14px;
+        }
+
+        .slogan {
+            color: #f4f6fb;
+            font-size: clamp(15px, 2.4vw, 22px);
+            line-height: 1.9;
+        }
+
+            .slogan::after {
+                content: "";
+                display: block;
+                width: 150px;
+                height: 4px;
+                background: var(--yellow);
+                border-radius: 10px;
+                margin: 15px auto 0;
+            }
+
+        .main {
+            max-width: 1250px;
+            margin: -20px auto 0;
+            padding: 25px 22px 55px;
+            position: relative;
+        }
+
+        .section-title {
+            text-align: center;
+            color: var(--yellow);
+            font-size: clamp(22px, 3vw, 30px);
+            margin-bottom: 30px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            text-decoration: none;
+            color: var(--white);
+            background: linear-gradient(145deg, #102f58, #061a38);
+            border: 1px solid #15518a;
+            border-radius: 20px;
+            padding: 25px 15px;
+            text-align: center;
+            min-height: 235px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 13px;
+            transition: transform .25s, border-color .25s, box-shadow .25s;
+        }
+
+            .card:hover {
+                transform: translateY(-8px);
+                border-color: var(--yellow);
+                box-shadow: 0 12px 30px rgba(0, 0, 0, .3);
+            }
+
+        .icon-circle {
+            width: 88px;
+            height: 88px;
+            border: 4px solid var(--yellow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+        }
+
+        .card h2 {
+            color: var(--yellow);
+            font-size: 19px;
+            line-height: 1.6;
+        }
+
+        .card p {
+            color: #dbe5f3;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .arrow {
+            background: var(--yellow);
+            color: var(--navy);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 23px;
+            margin-top: 3px;
+        }
+
+        .all-card {
+            border: 2px solid var(--yellow);
+            background: linear-gradient(145deg, #163e70, #081a36);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #b9c8dc;
+            border-top: 1px solid #18385d;
+            font-size: 14px;
+            line-height: 2;
+        }
+
+        @media (max-width: 1000px) {
+            .cards {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 650px) {
+            .hero {
+                min-height: 430px;
+                padding: 35px 15px 65px;
+                border-radius: 0 0 30% 5%;
+            }
+
+            .logo {
+                width: 70px;
+                height: 70px;
+            }
+
+            .main {
+                padding: 25px 14px 40px;
+            }
+
+            .cards {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .card {
+                padding: 20px 10px;
+                min-height: 215px;
+                border-radius: 16px;
+            }
+
+            .icon-circle {
+                width: 70px;
+                height: 70px;
+                font-size: 34px;
+            }
+
+            .card h2 {
+                font-size: 16px;
+            }
+
+            .card p {
+                font-size: 12px;
+            }
+
+            .all-card {
+                grid-column: 1 / -1;
+                min-height: 175px;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .all-card {
+                grid-column: auto;
+            }
+        }
+
+        .location-link {
+            display: inline-block;
+            margin-top: 12px;
+            color: #ffc107;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+            .location-link:hover {
+                color: #ffffff;
+                text-decoration: underline;
+            }
+
+    </style>
+</head>
+
+<body>
+
+    <header class="hero">
+        <div class="hero-content">
+
+            <img src="Logo.png" alt="لۆگۆی نوسینگە"
+                 class="logo"
+                 onerror="this.style.display='none'">
+
+            <h1 class="brand">
+                Driving <span>Test</span>
+            </h1>
+
+            <div class="teacher">
+                👨‍🏫 مامۆستا هاومەند کامران
+                &nbsp; | &nbsp;
+                🏢 نوسینگەی پشتیوان
+                <br>
+                <a href="https://www.google.com/maps/search/?api=1&query=52RH%2BG7W%2C+Koya+Rd%2C+Erbil%2C+Erbil+Governorate"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="location-link">
+                    📍 شوێنی نوسینگە لەسەر نەخشە
+                </a>
+            </div>
+
+
+            <p class="slogan">
+                فێربە، تاقیبکەرەوە، و بە دڵنیایی شۆفێری بکە.
+            </p>
+
+        </div>
+    </header>
+
+    <main class="main">
+
+        <h2 class="section-title">
+            ئەو بەشە هەڵبژێرە کە دەتەوێت
+        </h2>
+
+        <div class="cards">
+
+            <!-- بەشی هێماکان -->
+            <a class="card" href="signs.html">
+                <div class="icon-circle">🚦</div>
+                <h2>هێماکانی هاتووچۆ</h2>
+                <p>هێما و نیشانەکانی ڕێگا فێربە</p>
+                <span class="arrow">←</span>
+            </a>
+
+            <!-- بەشی میکانیک -->
+            <a class="card" href="safety.html">
+                <div class="icon-circle">🔧</div>
+                <h2>میکانیک</h2>
+                <p>پرسیارەکانی میکانیک و ئۆتۆمبێل</p>
+                <span class="arrow">←</span>
+            </a>
+
+            <!-- بەشی یاساکان -->
+            <a class="card" href="rules.html">
+                <div class="icon-circle">👮‍♂️</div>
+                <h2>یاساکانی هاتووچۆ</h2>
+                <p>یاسا و ڕێساکانی شۆفێری</p>
+                <span class="arrow">←</span>
+            </a>
+
+            <!-- بەشی ئیسعاف -->
+            <a class="card" href="general.html">
+                <div class="icon-circle">🚑</div>
+                <h2>ئیسعافات</h2>
+                <p>یارمەتیی سەرەتایی و فریاکەوتن</p>
+                <span class="arrow">←</span>
+            </a>
+
+            <!-- هەموو پرسیارەکان -->
+            <a class="card all-card" href="all-questions.html">
+                <div class="icon-circle">📚</div>
+                <h2>بەشێک لە پرسیارەکان</h2>
+                <p>بەختێکی باش</p>
+                <span class="arrow">←</span>
+            </a>
+
+        </div>
+    </main>
+
+    <footer>
+        🚘 Driving Test
+        <br>
+        فێربە، تاقیبکەرەوە، و بە دڵنیایی شۆفێری بکە.
+    </footer>
+
+</body>
+</html>

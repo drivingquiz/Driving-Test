@@ -1,0 +1,608 @@
+﻿
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بەشێک لە پرسیارەکان | Driving Test</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial,sans-serif;
+            background: linear-gradient(135deg,#d5e8f5,#e8f2f8);
+            color: #172033;
+            padding: 18px
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto
+        }
+
+        .topbar {
+            background: linear-gradient(135deg,#062d55,#075a9c);
+            color: white;
+            padding: 17px 20px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            box-shadow: 0 5px 15px #062d554d
+        }
+
+        .title {
+            font-size: 21px;
+            font-weight: bold
+        }
+
+        .timer {
+            background: #f2bd00;
+            color: #172033;
+            min-width: 60px;
+            padding: 9px 13px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 21px;
+            font-weight: bold
+        }
+
+            .timer.warning {
+                background: #d62828;
+                color: white
+            }
+
+        .progress {
+            background: #b9d8ee;
+            color: #063b68;
+            padding: 12px;
+            border-radius: 11px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 12px;
+            border: 1px solid #82b4d5
+        }
+
+        .quiz-card {
+            background: #f5faff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 18px #1441642e
+        }
+
+        .question {
+            background: #cfe3f2;
+            border-right: 6px solid #075a9c;
+            padding: 18px;
+            border-radius: 11px;
+            font-size: 20px;
+            font-weight: bold;
+            line-height: 1.9;
+            margin-bottom: 20px;
+            color: #082f52
+        }
+
+        .question-image-container {
+            text-align: center;
+            margin-bottom: 20px
+        }
+
+        .question-image {
+            max-width: 100%;
+            max-height: 320px;
+            object-fit: contain;
+            border-radius: 12px;
+            display: inline-block
+        }
+
+        .answers {
+            display: flex;
+            flex-direction: column;
+            gap: 11px
+        }
+
+        .answer {
+            width: 100%;
+            padding: 17px 16px;
+            border: 2px solid #91b8d5;
+            border-radius: 11px;
+            background: #d8eaf6;
+            color: #123653;
+            font-size: 19px;
+            text-align: right;
+            cursor: pointer;
+            transition: .2s;
+            line-height: 1.8
+        }
+
+            .answer:hover:not(:disabled) {
+                background: #c1ddef;
+                border-color: #075a9c
+            }
+
+            .answer:disabled {
+                cursor: default
+            }
+
+            .answer.correct {
+                background: #b6e2c0;
+                border: 2px solid #16803a;
+                color: #075c25;
+                font-weight: bold
+            }
+
+            .answer.wrong {
+                background: #f0baba;
+                border: 2px solid #c62828;
+                color: #a71919;
+                font-weight: bold
+            }
+
+        .next-btn {
+            width: 100%;
+            margin-top: 18px;
+            padding: 15px;
+            border: none;
+            border-radius: 11px;
+            background: linear-gradient(135deg,#064b82,#06356d);
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer
+        }
+
+            .next-btn:hover:not(:disabled) {
+                background: #042d5d
+            }
+
+            .next-btn:disabled {
+                background: #9ba8b4;
+                cursor: not-allowed
+            }
+
+        .result {
+            display: none;
+            text-align: center
+        }
+
+        .result-logo {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: 10px
+        }
+
+        .result h2 {
+            color: #064b82;
+            margin-bottom: 15px
+        }
+
+        .score {
+            font-size: 42px;
+            font-weight: bold;
+            color: #06356d;
+            margin: 15px 0
+        }
+
+        .result-info {
+            line-height: 2;
+            font-size: 18px;
+            margin-bottom: 20px
+        }
+
+        .restart-btn, .home-btn {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            margin-top: 8px;
+            font-size: 16px;
+            cursor: pointer
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg,#064b82,#06356d);
+            color: white
+        }
+
+        .home-btn {
+            background: #c5dff1;
+            color: #073b63
+        }
+
+        @media(max-width:600px) {
+            body {
+                padding: 10px
+            }
+
+            .topbar {
+                padding: 14px
+            }
+
+            .title {
+                font-size: 17px
+            }
+
+            .timer {
+                font-size: 18px;
+                min-width: 52px
+            }
+
+            .quiz-card {
+                padding: 13px
+            }
+
+            .question {
+                font-size: 18px
+            }
+
+            .answer {
+                font-size: 17px;
+                padding: 15px
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="quizArea">
+            <div class="topbar">
+                <div class="title">📚 بەشێک لە پرسیارەکان</div>
+                <div id="timer" class="timer">60</div>
+            </div>
+            <div id="progress" class="progress"></div>
+            <div class="quiz-card">
+                <div id="question" class="question"></div>
+                <div id="questionImageContainer" class="question-image-container" style="display:none">
+                    <img id="questionImage" class="question-image" src="" alt="وێنەی پرسیار">
+                </div>
+                <div id="answers" class="answers"></div>
+                <button id="nextBtn" class="next-btn" disabled>پرسیاری دواتر ←</button>
+            </div>
+        </div>
+        <div id="resultArea" class="quiz-card result">
+            <img src="Logo.png" class="result-logo" alt="Logo">
+            <h2>🎉 تاقیکردنەوە تەواو بوو</h2>
+            <div class="score" id="finalScore">0 / 0</div>
+            <div class="result-info" id="resultInfo"></div>
+            <button class="restart-btn" onclick="restartQuiz()">🔄 دووبارە دەست پێبکەرەوە</button>
+            <button class="home-btn" onclick="goHome()">🏠 گەڕانەوە بۆ سەرەتا</button>
+        </div>
+    </div>
+
+    <script>
+        const allQuestions = [
+            /* پرسیارەکانی میکانیک */
+            { Question: "وێنەی کام یەک لەم تایانە لە بارێکی ئاسایی دان؟", Image: "119.jpg", AnswerA: "تایەی ژمارە 1.", AnswerB: "تایەی ژمارە 2.", AnswerC: "تایەی ژمارە 3.", Correct: "B" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "120.jpg", AnswerA: "گڵۆپی تەمی پێشەوە (پڕۆجکتەر).", AnswerB: "گڵۆپی تەمی دواوە.", AnswerC: "لایتی فول - بەرز (عالی) Full Light.", Correct: "B" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "121.jpg", AnswerA: "بەرزبوونەوەی پلەی گەرمی بزوێنەر (حەماوە).", AnswerB: "پشتێنی سەلامەتی ببەستە.", AnswerC: "کێشە لە ڕۆنی بزوێنەر هەیە.", Correct: "A" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "122.jpg", AnswerA: "هەبوونی کێشە لە سیستەمی ABS.", AnswerB: "تەنکبوون / نەمانی بانسەکانی ئیستۆپکردن.", AnswerC: "وەستێنەری پارککردن (برێک) کارایە.", Correct: "A" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "123.jpg", AnswerA: "لایتی ئۆتۆمبێل کار ناکات.", AnswerB: "دەرگا دانەخراوە.", AnswerC: "هەبوونی کێشە لە پاتری یان بارگاوی کردن.", Correct: "C" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "124.jpg", AnswerA: "هەوای ئێرباگ کێشەی هەیە / کار ناکات.", AnswerB: "هەبوونی کێشە لە سوکاندا.", AnswerC: "پشتێنی سەلامەتی ببەستە.", Correct: "A" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "126.jpg", AnswerA: "سیستەمی دژە خلیسک.", AnswerB: "فلتەری هەوا.", AnswerC: "لێخوڕینی ژینگەپارێزی.", Correct: "C" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "128.jpg", AnswerA: "لایتی نزم (ناصی).", AnswerB: "گڵۆپی تەمی دواوە.", AnswerC: "لایتی فول - بەرز (عالی) Full Light.", Correct: "C" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "129.jpg", AnswerA: "لایتی سەکن.", AnswerB: "گڵۆپی تەمی دواوە.", AnswerC: "لایتی فول - بەرز (عالی) Full Light.", Correct: "A" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "130.jpg", AnswerA: "لایتی سەکن.", AnswerB: "گڵۆپی تەمی دواوە.", AnswerC: "لایتی فول - بەرز (عالی) Full Light.", Correct: "C" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "131.jpg", AnswerA: "گڵۆپی تەمی پێشەوە (پڕۆجکتەر).", AnswerB: "گڵۆپی تەمی دواوە.", AnswerC: "لایتی فول - بەرز (عالی) Full Light.", Correct: "A" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "132.jpg", AnswerA: "هەبوونی کێشە لە سیستەمی ABS.", AnswerB: "وەستێنەری پارککردن (برێک) کارایە.", AnswerC: "تەنکبوون / نەمانی بانسەکانی ئیستۆپکردن.", Correct: "C" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "133.jpg", AnswerA: "فشاری هەوای تایە کەمە.", AnswerB: "بوونی کێشە لە گێڕدا (ئۆتۆمبێلی گێڕ ئۆتۆماتیک).", AnswerC: "بوونی کێشە لە سیستەمی ABS.", Correct: "B" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "134.jpg", AnswerA: "هەبوونی کێشە لە گڵۆپەکانی دەرەوە.", AnswerB: "هەوای ئێرباگ کێشەی هەیە / کار ناکات.", AnswerC: "وەستێنەری پارککردن (برێک) کارایە.", Correct: "A" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "135.jpg", AnswerA: "فلتەری هەوا پیسە.", AnswerB: "کەمی ئاوی پاککردنەوەی جام.", AnswerC: "بەرزبوونەوەی پلەی گەرمی بزوێنەر.", Correct: "A" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "136.jpg", AnswerA: "سووتەمەنی کەمە.", AnswerB: "ئاوی ڕادێتەر کەمی کردووە.", AnswerC: "کێشە لە ڕۆنی بزوێنەر هەیە.", Correct: "A" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "137.jpg", AnswerA: "بوونی کێشە لە داینامۆ.", AnswerB: "بوونی کێشە لە گێڕدا.", AnswerC: "بوونی کێشە لە بزوێنەر یان سیستەمی سووتەمەنیدا.", Correct: "C" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "138.jpg", AnswerA: "بوونی کێشە لە سیستەمی دژە خلیسک.", AnswerB: "فشاری هەوای تایە کەمە.", AnswerC: "بوونی کێشە لە گڵۆپەکانی دەرەوە.", Correct: "B" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "139.jpg", AnswerA: "تەنکبوون / نەمانی بانسەکانی ئیستۆپکردن.", AnswerB: "بەرزبوونەوەی پلەی گەرمی بزوێنەر.", AnswerC: "کەمی ئاوی پاککردنەوەی جام.", Correct: "C" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "140.jpg", AnswerA: "هەوای ئێرباگ کێشەی هەیە / کار ناکات.", AnswerB: "کێشە لە سوکاندا هەیە.", AnswerC: "بوونی کێشە لە پاتری یان بارگاوی کردن.", Correct: "B" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "141.jpg", AnswerA: "پشتێنی سەلامەتی ببەستە.", AnswerB: "هەوای ئێرباگ کێشەی هەیە / کار ناکات.", AnswerC: "پشتێنی سەلامەتی کار ناکات.", Correct: "C" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "142.jpg", AnswerA: "کێشە لە سوکاندا هەیە.", AnswerB: "فشاری هەوای تایە کەمە.", AnswerC: "وەستێنەری پارککردن (برێک) کارایە.", Correct: "C" },
+            { Question: "ئەم هێمایە لە ناو داشبۆرد مانای چییە؟", Image: "143.jpg", AnswerA: "ئاوی ڕادێتەر کەمی کردووە.", AnswerB: "کێشە لە ڕۆنی بزوێنەر هەیە.", AnswerC: "بوونی کێشە لە پاتری یان بارگاوی کردنەوە.", Correct: "B" },
+            { Question: "ئەم هێمایە مانای چییە؟", Image: "127.jpg", AnswerA: "هێزی بزوێنەری ئۆتۆمبێلە.", AnswerB: "نیشانەی مۆدێلی ئۆتۆمبێلە.", AnswerC: "نیشانەی پشکنینی ساڵانەی توندوتۆڵی ئۆتۆمبێل.", Correct: "C" },
+
+            /* پرسیارە نوێکان: پێشڕەوی و یاساکانی هاتووچۆ */
+            { Question: "لەپێشڕەویەکانی هاتوچۆ؟", AnswerA: "دەستی پۆلیسی هاتوچۆ پێشینەی هەیە تەنها لەسەر ترافیک لایت.", AnswerB: "دەستی پۆلیسی هاتوچۆ پێشینەی هەیە تەنها لەسەر تابلۆکان.", AnswerC: "دەستی پۆلیسی هاتوچۆ پێشینەی هەیە تەنها لەسەر جەم هێماکان.", Correct: "C" },
+            { Question: "لەپێشڕەویەکانی هاتوچۆ؟", AnswerA: "ترافیک لایت پێشینەی هەیە لەسەر دەستی پۆلیس.", AnswerB: "ترافیک لایت پێشینەی هەیە لەسەر هێڵ و تابلۆکان.", AnswerC: "هێڵ و تابلۆکان پێشینەی هەیە لەسەر ترافیک لایک.", Correct: "B" },
+            { Question: "لەپێشڕەویەکانی هاتوچۆ؟", AnswerA: "سوارڕۆی وەستاو پێشڕەوی هەیە لەسەر سوارڕۆی جوڵاو.", AnswerB: "سوارڕۆی جوڵاو پێشڕەوی هەیە لەسەر سوارڕۆی وەستاو.", AnswerC: "هیچ سوارڕۆیەک پێشڕەوی نییە لەسەر ئەوی تر.", Correct: "B" },
+            { Question: "لەپێشڕەویەکانی هاتوچۆ؟", AnswerA: "پێشڕەوی بۆ سوارڕۆ سەرەکیەکانە بەسەر سوارڕۆ لاوەکیاکان.", AnswerB: "پێشڕەوی بۆ سوارڕۆ لاوەکیاکانە بەسەر سوارڕۆ سەرەکیاکان.", AnswerC: "پێشڕەوی بۆ ئەو سوارڕۆیانەیە کە خێراتر لێدەخوڕن.", Correct: "A" },
+            { Question: "لەپێشڕەویەکانی هاتوچۆ؟", AnswerA: "پێشڕەوی بۆ ئەو سوارڕۆیانەیە کە پێچ دەکەنەوە.", AnswerB: "پێشڕەوی بۆ ئەو سوارڕۆیانەیە کە ڕاستەو ڕاست دەڕۆن.", AnswerC: "پێشڕەوی بۆ هیچیان نییە.", Correct: "B" },
+            { Question: "لەپێشڕەویەکانی هاتوچۆ؟", AnswerA: "پێشڕەوی بۆ ئەو سوارڕۆیەیە کە بە هەورازدا سەردەکەوێت نەک لە هەوراز دێتە خوار.", AnswerB: "پێشڕەوی بۆ هەردوکیانە ئەگەر لە نشێو بوو.", AnswerC: "پێشڕەوی بۆ ئەو سوارڕۆیەیە کە بە هەورازدا دێتە خوار نەک لە هەورازسەردەکەوێت.", Correct: "A" },
+            { Question: "لەپێشڕەویەکانی هاتوچۆ؟", AnswerA: "هەمیشە پێشڕەوی بۆ ئۆتۆمبێلی فریاکەوتنە لەسەر سوارڕۆکانی تر.", AnswerB: "پێشڕەوی بۆ ئۆتۆمبێلی تایبەتە لەسەر ئۆتۆمبێلەکانی فریاکەوتن.", AnswerC: "پێشڕەوی بۆ ئۆتۆمبێلی فریاکەوتنە لەسەر سوارڕۆکانی تەنها لەکاتی ئەرک و فەرماندا.", Correct: "C" },
+            { Question: "لەپێشڕەویەکانی هاتوچۆ؟", AnswerA: "پێشڕەوی بۆ سوارڕۆی ناو فلکەیە لەسەر ئەو سوارڕۆیانەی دطنە ناو فلکەوە.", AnswerB: "پێشڕەوی بۆ ئەو سوارڕۆیانەیە کە دێنە ناو فلکەوە لەسەر ئەو سوارڕۆیانەی لەناو فلکەکەن.", AnswerC: "پێشڕەوی بۆ ئەو سوارڕۆیانەیە کە خێراتر لێدەخوڕن.", Correct: "A" },
+            { Question: "لەپێشڕەویەکانی هاتوچۆ؟", AnswerA: "پێشڕەوی بۆ ئەو سوارڕۆیانەی دەیانەوێت بێنە ناوەوە بەرامبەر بەو سوارڕۆیانەی دەڕۆن دەرەوە.", AnswerB: "پێشڕەوی بۆ ئەو سوارڕۆیانەی دەڕۆن دەرەوە بەرامبەر بەو سوارڕۆیانەی دەیانەوێت بێنە ناوەوە .", AnswerC: "پێشڕەوی بۆ هیچیان نییە.", Correct: "A" },
+            { Question: "هەرکەسێک هێرش بکاتە سەر پۆلیسی هاتوچۆ سزا دەدرێت:", AnswerA: "بە بەندکردنی 3ساڵ.", AnswerB: "تەنها سزای دارایی دەدرێت", AnswerC: "بەهەڵوەشاندنەوەی مۆڵەتەکەی.", Correct: "A" },
+            { Question: "هەرکەسێک شوفێری بکات مۆڵەتەکەی کێشرابێتەوە سزا دەدرێت بە:", AnswerA: "بەندکردن و سزای دارایی.", AnswerB: "سزای دارایی.", AnswerC: "بەندکردن.", Correct: "B" },
+            { Question: "هەرکەسێک شوفێری بکات مۆڵەتەکەی هەڵوەشابێتەوە سزا دەدرێت بە:", AnswerA: "بەندکردن و سزای دارایی.", AnswerB: "بەندکردن.", AnswerC: "سزای دارایی.", Correct: "B" },
+            { Question: "ڕێگەپێدراوە سەرنشین بەشێکی جەستەی لە ئۆتۆمبێلەوە بهێتە دەر؟", Image: "p76.jpg", AnswerA: "بەڵێ تەنها لەکاتی بۆنەو ئاهەنگەکان.", AnswerB: "نەخێر هیچکات ڕێگە پێدراو نیە.", AnswerC: "بەڵێ بە مەرجێ شۆفێر ڕێگەبدات.", Correct: "B" },
+            { Question: "ڕێگای دەرەکی چییە؟", Image: "p77.jpg", AnswerA: "لەنێوان گەڕەکەکانی ناو شارە.", AnswerB: "شقامە سەرەکیاکانی ناو شارە.", AnswerC: "ئەو ڕێگایانەن کە شارەکان پێکەوە دەبەستێتەوە.", Correct: "C" },
+            { Question: "ئەگەر کەسێک بە سەرخۆشی لێخوڕێت سزا دەدرێت:", Image: "p78.jpg", AnswerA: "تەنها بەند کردن.", AnswerB: "تەنها سزای دارایی.", AnswerC: "بەندکردن یان سزای دارایی و لێڕاکێشانی مۆڵەت.", Correct: "C" },
+            { Question: "یاسای هاتووچۆ بۆ کێیە؟", Image: "p79.jpg", AnswerA: "شۆفێر.", AnswerB: "بۆ شۆفێر و سەرنشینە.", AnswerC: "بۆ شۆفێر و سەرنشین و پیادەیە.", Correct: "C" },
+            { Question: "هەرکەسێک ئۆتۆمبێلەکەی بداتە دەست کەسێک کە مۆڵەتی شۆفێری نەبێت:", Image: "p80.jpg", AnswerA: "هەمان سزای شۆفێرە بێ مۆڵەتەکەی هەیە.", AnswerB: "سزانادرێت.", AnswerC: "بەندکردن.", Correct: "A" },
+            { Question: "لەچکاتێکدا پێەیستە شۆفێری پاس هاوکاری سەرنشین بێت؟", Image: "p81.jpg", AnswerA: "لەکاتی سەرکەوتن.", AnswerB: "لەکاتی سەرکەوتن و دابەزین.", AnswerC: "ئەگەر سەرنشین بەساڵاچوو بوو یان نەخۆشبوو یان خاوەن پێداویستی تایبەت بوو.", Correct: "C" },
+            { Question: "هەرکەسێک بە کەمتەرخەمی لێبخوڕێت و ببێتە مایەی پەککەوتنی کەسێک؟", Image: "p82.jpg", AnswerA: "تەنها بە بەندکردن سزا دەدرێت.", AnswerB: "تەنها سزای دارایی دەدرێت.", AnswerC: "بەندکردن و سزای دارایی دەدرێت.", Correct: "C" },
+            { Question: "هەرکەسێک سوکایەتی بکات بە پۆلیسی هاتووچۆ سزا دەدرێت:", Image: "p83.jpg", AnswerA: "بە هەڵوەشاندنەوەی مۆڵەتەکەی.", AnswerB: "بە سزای دارایی.", AnswerC: "بە بەندکردن", Correct: "C" },
+            { Question: "ژمارەی تەلەفۆنی بەرگری شارستانی (ئاگر کوژێنەوە) چەندە؟", Image: "p84.jpg", AnswerA: "440", AnswerB: "122", AnswerC: "115", Correct: "C" },
+            { Question: "لەکەشو هەوای ئاساییدا پێویستە ماوەی سەلامەتی چەند بێت؟", Image: "p85.jpg", AnswerA: "چوار 4 چرکە.", AnswerB: "سێ 3 چرکە.", AnswerC: "دوو 2 چرکە.", Correct: "C" },
+            { Question: "ئەم یەکیر بڕە چۆنە؟", Image: "p86.jpg", AnswerA: "کۆنترۆڵ کراوە.", AnswerB: "کۆنترۆڵ نەکراوە.", AnswerC: "پێشڕەوی بۆ دەستە ڕاستە.", Correct: "A" },
+            { Question: "ئەم یەکیر بڕە چۆنە؟", Image: "p87.jpg", AnswerA: "کۆنترۆڵ کراوە.", AnswerB: "کۆنترۆڵ نەکراوە.", AnswerC: "پێشڕەوی بۆ دەستە ڕاستە.", Correct: "A" },
+            { Question: "هێڵی وریاکردنەوە لە مەترسی بۆ چییە؟", Image: "p89.jpg", AnswerA: "بۆ بەردەوام بوونە بەهەمان خێرایی.", AnswerB: "بۆ وریابوون و کەم کردنەوەی خێراییە.", AnswerC: "تەنها بۆ جوانیە.", Correct: "B" },
+            { Question: "ئەم کەرەستەیە بۆچی باکاردێت؟", Image: "p88.jpg", AnswerA: "بۆ پاڕکی خاوەن پێداویستی تایبەت.", AnswerB: "بۆ دیاریکردنی کاتی پاڕککردنە.", AnswerC: "بۆ دیاریکردنی خێراییە.", Correct: "B" },
+            { Question: "هەرکەسێک بە کەمتەرخەمی لێبخوڕێت و ببێتە مایەی مردنی کەسێک؟", Image: "p90.jpg", AnswerA: "بەندکردن و سزای دارایی سزا دەدرێت.", AnswerB: "تەنها بە بەندکردن سزا دەدرێت.", AnswerC: "تەنها سزای دارایی.", Correct: "A" },
+            { Question: "ڕێگای ناوخۆیی چییە؟", Image: "p91.jpg", AnswerA: "لە ڕێگای پایسکیل سوار پێکهاتوە.", AnswerB: "لە ڕێگای سەرەکی و لاوەکی پێکهاتوە.", AnswerC: "لە ڕێگای پیادە و پاسکیل سوار پێکهاتوە.", Correct: "B" },
+            { Question: "ئەگەر کەسێک زیاتر لە دوو جار بە سەرخۆشی لێبخوڕێت سزا دەدرێت:", Image: "p92.jpg", AnswerA: "بەندکردن و سزای دارایی و لێڕاکێشانی مۆڵەتەکەی.", AnswerB: "سزای دارایی.", AnswerC: "بەندکردن.", Correct: "A" },
+            { Question: "ئایا مۆڵەتی شوفێری پوچەڵ دەبێتەوە؟", Image: "p93.jpg", AnswerA: "بەڵێ، ئەگەر شۆفێر یەکێک لە مەرژەکانی بەدەستهێنانی مۆڵەتی لەدەست دابێت.", AnswerB: "نەخێر، لەهیچ کاتێک پوچەڵ نابێت.", AnswerC: "بەڵێ، تەنها لەکاتی مردنی خاوەن مۆڵەتی شۆفێری.", Correct: "A" },
+            { Question: "ژمارە تەلەفۆنی پۆلیسی فریاکەوتن چەندە؟", Image: "p94.jpg", AnswerA: "115", AnswerB: "104", AnswerC: "122", Correct: "B" },
+            { Question: "ژمارە تەلەفۆنی پۆلیسی هاتوچۆ چەندە؟", Image: "p94.jpg", AnswerA: "440", AnswerB: "122", AnswerC: "115", Correct: "A" },
+            { Question: "پێوەستە کوشنی منداڵی کۆرپە لەکوێی ئۆتۆمبێل دابنرێت؟", Image: "p95.jpg", AnswerA: "تەنها لەسەر کوشنی دواوە.", AnswerB: "تەنها لەسەر کوشنی پێشەوە.", AnswerC: "لەسەر هەر کوشنێک ئاساییە.", Correct: "A" },
+            { Question: "هەر کەسێک هێرش بکاتە سەر ئەفسەری هاتووچۆ سزا دەدرێت:", Image: "p96.jpg", AnswerA: "بە هەڵوەشاندنەوەی مۆڵەتەکەی.", AnswerB: "تەنها سزای دارایی دەدرێت.", AnswerC: "بە بەندکردن.", Correct: "C" },
+            { Question: "ئەگەر کەسێک لە ژێر کاریگەری ماددەی هۆشبەر ئۆتۆمبێل لێبخوڕێت سزا دەدرێت:", Image: "p97.jpg", AnswerA: "بە بەنکردن یان سزایی دارایی و لێڕاکێشانی مۆڵەتەکەی.", AnswerB: "تەنها سزایی دارایی.", AnswerC: "تانها بەندکردن.", Correct: "A" },
+            { Question: "تا چ تەمەنێک پێویستە منداڵ لەسەر کوشنی تایبەت بە منداڵ دابنرێت؟", Image: "p98.jpg", AnswerA: "تا تەمەنی 10 ساڵ.", AnswerB: "تا تەمەنی 8 ساڵ.", AnswerC: "تا تەمەنی 13 ساڵ.", Correct: "C" },
+            { Question: "منداڵ تا کێشی چەند لەسەر کوشنی تایبەت بە منداڵ دادەنرێت؟", Image: "p99.jpg", AnswerA: "20kg.", AnswerB: "10kg.", AnswerC: "36kg.", Correct: "C" },
+            { Question: "هەرکەسێک مۆڵەتی شۆفێری تایبەتی نەبێت بە جۆری سوارڕۆکەی:", Image: "p100.jpg", AnswerA: "بە بەندکردن سزا دەدرێت.", AnswerB: "بە سزای دارایی سزا دەدرێت.", AnswerC: "بەندکردن و سزای دارایی.", Correct: "B" },
+            { Question: "هەر شۆفێرێک لەسەر هێڵی پەڕینەوە لە پیادە بدات چۆن سزادەدرێت؟", Image: "p101.jpg", AnswerA: "توندترین سزا.", AnswerB: "بە هەڵوەشاندنەوەی مۆڵەتەکەی.", AnswerC: "تەنها سزای دارایی دەدرێت.", Correct: "A" },
+            { Question: "کەسێک لە ژێر کاریگەری ماددەی هۆشبەر لێبخوڕێت ببێتە مایەی پەکەوتنی کەسێک سزا دەدرێت:", Image: "p102.jpg", AnswerA: "بە بەندکرد یان سزایی دارایی و لێڕاکێشانی مۆڵەتەکەی.", AnswerB: "بە بەندکردن و سزای دارایی.", AnswerC: "بە بەندکردن.", Correct: "A" },
+            { Question: "کەسێک بە سەرخۆشی لێبخوڕێت ببێتە مایەی پەکەوتنی کەسێک سزا دەدرێت:", Image: "p103.jpg", AnswerA: "بە بەندکرد یان سزایی دارایی و لێڕاکێشانی مۆڵەتەکەی.", AnswerB: "بە بەندکردن و سزای دارایی.", AnswerC: "بە بەندکردن.", Correct: "A" },
+            { Question: "ژمارە تەلەفۆنی فریاگوزاری ئەمبۆڵانس (اسعاف) چەندە؟", Image: "p104.jpg", AnswerA: "122", AnswerB: "115", AnswerC: "440", Correct: "A" },
+            { Question: "هەرکەسێک بە کەمتەرخەمی لێبخوڕێت و ببێتە مایەی مردنی کەسێک؟", Image: "p105.jpg", AnswerA: "بەندکردن و سزای دارایی سزا دەدرێت.", AnswerB: "تەنها بە بەندکردن سزا دەدرێت.", AnswerC: "تەنها سزای دارایی دەدرێت.", Correct: "A" },
+            { Question: "ئەم هێمایە لە پاشی بارهەڵگر مانای چییە؟", Image: "p106.jpg", AnswerA: "سوارڕۆیەکی یەک پارچەیە و کێشی لە 3500kg قوڕسترە.", AnswerB: "سوارڕۆیەکی دوو پارچەیە و کێشی لە 3500kg قوڕسترە.", AnswerC: "سوارڕۆیەکی یەک پارچەیە و کێشی لە 3500kg سووکترە.", Correct: "B" },
+            { Question: "ئەگەر کەەسێک بەهۆی کەمتەرخەمی ڕوداوی هاتووچۆ دروست بکات و هاوکاری بریندار نەدات سزا دەدرێت:", Image: "p107.jpg", AnswerA: "تەنها بە بەندکردن سزا دەدرێت.", AnswerB: "تەنها سزایی دارایی.", AnswerC: "بەندکردن و سزایی دارایی و لێڕاکێشانی مۆڵەتەکەی.", Correct: "C" },
+            { Question: "لەکاتی بەستنی عارەبانەدا پێویستە ماوەی سەلامەتی چەند بێت؟", Image: "p108.jpg", AnswerA: "چوار 4 چرکە.", AnswerB: "سێ 3 چرکە.", AnswerC: "دوو 2 چرکە.", Correct: "B" },
+            { Question: "بە کەمتەرخەمی لێبخوڕێت و ببێتە مایەی پەکەوتنی زیاتر لە کەسێک؟", Image: "p109.jpg", AnswerA: "تەنها بە بەندکردن سزا دەدرێت.", AnswerB: "تەنها سزای دارایی دەدرێت.", AnswerC: "بەندکردن و سزای دارایی دەدرێت.", Correct: "C" },
+            { Question: "لەکاتی لێخوڕین لە پشتی بارهەڵگر پێویستە ماوەی سەلامەتی چەند بێت؟", Image: "p110.jpg", AnswerA: "چوار 4 چرکە.", AnswerB: "سێ 3 چرکە.", AnswerC: "دوو 2 چرکە.", Correct: "B" },
+            { Question: "بۆچی سەرخۆشی پیادەیەکی مەترسیدارە؟", Image: "p111.jpg", AnswerA: "بەهۆی باڵای کورتیانەوە.", AnswerB: "چونکە ناتوانن کۆنتڕوڵی خۆیان بکەن.", AnswerC: "بەهۆی جوڵەی خێرایانەوە.", Correct: "B" },
+            { Question: "ئەم هێمایە لە پاشی بارهەڵگر مانای چییە؟", Image: "p112.jpg", AnswerA: "سوارڕۆیەکی یەک پارچەیە و کێشی لە 3500kg قوڕسترە.", AnswerB: "سوارڕۆیەکی دوو پارچەیە و کێشی لە 3500kg قوڕسترە.", AnswerC: "سوارڕۆیەکی یەک پارچەیە و کێشی لە 3500kg سووکترە.", Correct: "A" },
+            { Question: "ئەم هێمایە لە دەرگای ئۆتۆمبێل مانای چییە؟", Image: "p113.jpg", AnswerA: "دەرگا تەنها لە دەرەوە دەکرێتەوە.", AnswerB: "دەرگا تەنها لە ناوەوە دەکرێتەوە.", AnswerC: "دەرگا تەنهابە سویچ دەکرێتەوە.", Correct: "A" },
+            { Question: "هەرکەسێک مۆڵەتی شۆفێری تایبەتی نەبێت بە جۆری سوارڕۆکەی:", Image: "p115.jpg", AnswerA: "بە بەندکردن سزا دەدرێت.", AnswerB: "بە سزای دارایی سزا دەدرێت.", AnswerC: "بەندکردن و سزای دارایی.", Correct: "B" },
+            { Question: "لە کەش و هەوای نا ئاساییدا پێویستە ماوەی سەلامەتی چەند بێت؟", Image: "p116.jpg", AnswerA: "چوار 4 چرکە.", AnswerB: "سێ 3 چرکە.", AnswerC: "دوو 2 چرکە.", Correct: "A" },
+            { Question: "ئەم یەکیر بڕە چۆنە؟", Image: "p117.jpg", AnswerA: "کۆنترۆڵ کراوە.", AnswerB: "کۆنترۆڵ نەکراوە.", AnswerC: "پێشڕەوی بۆ دەستە ڕاستە.", Correct: "B" },
+            { Question: "ئەم یەکیر بڕە چۆنە؟", Image: "p118.jpg", AnswerA: "کۆنترۆڵ کراوە ڕێگە بدە.", AnswerB: "کۆنترۆڵ نەکراوە.", AnswerC: "پێشڕەوی بۆ دەستە ڕاستە.", Correct: "C" },
+
+            /* پرسیارەکانی ئیسعاف و یارمەتی سەرەتایی */
+            { Question: "ئەگەر قوربانیەکی ڕوداوی هاتووچۆ لە هۆش خۆیدا بێت بەڵام باس لە ئازاری سنگی و سەختی هەناسەدانی بکات، ئەمە دەکرێت ئاماژە بەچی بکات؟", AnswerA: "شکانی پەراسو.", AnswerB: "جەڵتەی دڵ.", AnswerC: "گیرانی بۆڕی هەناسە.", Correct: "B" },
+            { Question: "چۆن لە ماتۆڕسوارێک نزیک دەبینەوە کە بەهۆی ڕوداوێکەوە کەوتۆتە خوارەوەو لەسەر ڕێگا کەوتوە؟", AnswerA: "جێی دەهێڵم.", AnswerB: "دەیخەمە سەر سنگ.", AnswerC: "هەوڵدەدەم بە جێگیری بمێنێتەوە و پەیوەندی بە تیمی فریاگوزاریەوە دەکەم.", Correct: "C" },
+            { Question: "لە ڕوداوی ماتۆڕسکیل، ماتۆڕسوارەکە بێهۆشەو هەناسە دەدات، گرنگترین کار چیە یەکەم جار بیکەین؟", AnswerA: "وازی لێدێنم.", AnswerB: "سەرنج دەدەم بۆ نیشانەکانی خوێن بەربون.", AnswerC: "CPR لۆ دەکەم.", Correct: "B" },
+            { Question: "یەکەم کار چیە کە پێویستە لە شوێنی ڕوداوی هاتوچۆ ئەنجامی بدەیت؟", AnswerA: "سەرج دەدەم بۆ مەترسیەکان و هەڵسەنگاندنی شوێنی ڕوداوەکە لەپێناو سەلامەتی.", AnswerB: "پەیوەندی بە منەوە نیە.", AnswerC: "ڤیدیۆی دەکەم.", Correct: "A" },
+            { Question: "ئەگەر گومانت کرد کەسێک دوای ڕوداوی هاتوچو زیان بەر بڕبڕەی پشتی کەوتبێت، پێویستە چی بکەیت؟", AnswerA: "بە زوترین کات ڕایدەکێشم.", AnswerB: "هەوڵدەدەم کەسەکە نەجوڵێت بەتایبەتی لە سەر و ملی دا.", AnswerC: "وازی لێدێنم و دەڕۆم.", Correct: "B" },
+            { Question: "ئەگەر شاتحاڵی لێدانی پیادەیەک بویت لەلایەن ئۆتۆمبێلێکەوە پێوەستە چی بکەیت؟", AnswerA: "پەیوەندی بە خزمەتگوزاریە فریاگوزارییەکانەوە دەکەم.", AnswerB: "دوای تاوانبار دەکەوم.", AnswerC: "هیچ پەیوەندی بەمنەوە نیە.", Correct: "A" },
+            { Question: "چی دەکەیت ئەگەر توشی خوێن بەربونی لووت بویت لەکاتی لێخوڕینی ئۆتۆمبێلدا؟", AnswerA: "بە پەنجە کوناکانی لوت بەیەکەوە دەنوشتێنمەوە و سەر بۆ پێشەوە لار دەکەمەوە.", AnswerB: "بە کلێنس پاکی دەکەمەوە.", AnswerC: "سەرم بۆ پشتەوە بەرز دەکەمەوە.", Correct: "A" },
+            { Question: "ئەگەر گومان بکەی ئەو کەسەی شۆفێری دەکات توشی جەڵتە بوە لەکاتی لێخوڕیندا چی دەکەیت؟", AnswerA: "بەخێراییەکی کەم بەردەوام دەبم.", AnswerB: "هەوڵدەدەم ئۆتۆمبێلەکە لە شوێنێکی سەلامەت بوەستێنێت و پەیوەندی بە تیمی فریاگوزاری دەکەم.", AnswerC: "بزوێنەرەکە دەکوژێنمەوە.", Correct: "B" },
+            { Question: "چۆن مامەڵە لەگەڵ قوربانیەک دەکەی کە توشی حەپەسان یان شۆک بوە؟", AnswerA: "دەیخەمە سەر سنگ.", AnswerB: "سەری بۆ پشتەوە لار دەکەمەوە.", AnswerC: "قاچەکانی بەرز دەکەمەوە و دایدەنیشێنم.", Correct: "C" },
+            { Question: "چی دەکەیت ئەگەر قوربانیەک بریندار بونی لە سەریدا هەبێت و بێهۆش بێت؟", AnswerA: "جوڵە بەسەری دەکەم.", AnswerB: "وازی لێدێنم.", AnswerC: "هەوڵ دەدەم بە ڕێکی بمێنێتەوەو چاودێری هەناسەدانی دەکەم.", Correct: "C" },
+            { Question: "چۆن مامەڵە لەگەڵ قوربانیاک دەکەیت کە نیشانەی شکانی ئێسک لەسەر جەستەی دیاربێت؟", AnswerA: "بەزوترین کات ڕایدەکێشم.", AnswerB: "هەوڵدەدەم کەسەکە جوڵە نەکات پیوەندی بە تیمی فریا گوزاری دەکەم.", AnswerC: "ئاو و خۆراک دەدەمە قوربانیەکە.", Correct: "B" },
+            { Question: "چی دەکەیت ئەگەر قوربانیەک لەناو ئۆتۆمبێلەکەیدا گیری خواردبێت خواردبێت دوای ڕوداو؟", AnswerA: "هەوڵدەدەم بە‌هێمنی بمێنێتەوە و چاودێری بۆ گەیشتنی تیمی فریاگوزاری.", AnswerB: "جێی دەهێڵم.", AnswerC: "ئاو دەدەم بە قوربانیاکە.", Correct: "A" },
+            { Question: "چۆن یارمەتی قوربانیەک دەدەیت کە ناتوانێت بەباشی هەناسە بدات دوای ڕوداوێک؟", AnswerA: "سەری قوربانیەکە بەرەو سەر برز دەکەوە.", AnswerB: "یارمەتی دەدەم بەشێوەیەکی ڕێک دابنیشێت و سەری بەرەو خوارەوە لار بکاتەوە.", AnswerC: "جێی دەهێڵم پەیوەندی بەمنەوە نیە.", Correct: "B" },
+            { Question: "چۆن یارمەتی کەسێک دەکەیت کە بەهۆی ڕوداوێکەوە شتێکی دەرەکی کەوتبێتە ناو چاویەوە؟", AnswerA: "بە وریایی بە ئاوی پاک چاوی دەشۆم.", AnswerB: "بە پەڕۆ خاوێنی دەکەمەوە.", AnswerC: "بە پەنجەی دەستم بە خێرایی پاکی دەکەمەوە.", Correct: "A" },
+            { Question: "چی دەکەیت ئەگەر قوربانیەک هەست بە ئازارێکی توند لە ناو سک بکات دوای ڕوداوێک؟", AnswerA: "ئاو و خۆراکی پێدەدەم.", AnswerB: "وازی لێدێنم.", AnswerC: "هەوڵ دەدەم بە هێمنی بمێنێتەوە و داوای یارمەتی پزیشکی دەکەم.", Correct: "C" },
+            { Question: "چی دەکەی ئەگەر قوربانیەک نەتوانێت قسە بکات یان بە ئاسانی لێت تێنەگات؟", AnswerA: "پەیوەندی بەمنەوە نیە.", AnswerB: "بە هێواشی و بە ڕونی قسەی لەگەڵ دا دەکەم و دڵنیایی پێدەدەم کە یارمەتی لە ڕێگادایە.", AnswerC: "دەیخومە سەر سنگ.", Correct: "B" },
+            { Question: "ئەگەر کەسێک توشی سوتانێکی زۆر هاتبێت لە جەستەی چی دەکەیت؟", AnswerA: "شوێنی سوتانەکە فێنک دەکەمەوە بە ئاوی پاک.", AnswerB: "بە پەڕۆ خاوێنی دەکەمەوە.", AnswerC: "کەمێک ماست لەشوێنی سوتانەکە دەدەم.", Correct: "A" },
+            { Question: "بۆ دڵنیابون لەوەی کەسێکی لەهۆشچوو لێدانی دڵی هەیە، باشترین شوێن بریتیە لەکام لەمانە؟", AnswerA: "جێی دەهێڵم.", AnswerB: "هەست لە هەناسەدانی دەگرم.", AnswerC: "خوێنهێنەری کارۆتید لە ملدا.", Correct: "C" },
+            { Question: "لەکاتی نەبونی هەناسە و لێدانی دڵ لە کەسێکی لەهۆشچوو پێویستە سارەتا چی بکەیت؟", AnswerA: "باوەشێنی دەکەم.", AnswerB: "هەناسەدانی دەستکرد CPR ئەنجام دەدەم.", AnswerC: "بەڕێکی دایدەنیشێنم.", Correct: "B" },
+            { Question: "ئەگەر قوربانیەکە خوێنبەربونێکی زۆری هەبێت، چی دەکەیت؟", AnswerA: "پەستان دەخەمە سەر شوێنی برینەکە بە باندێج یان بە پارچە قوماشێک.", AnswerB: "نایبەستمەوە لێی دەگەڕێم.", AnswerC: "بە پەڕۆک خاوێنی دەکەمەوە.", Correct: "A" },
+            { Question: "دوای ڕوداوێکی ئۆتۆمبێل، شۆفێرەکە یارمەتی ڕەتدەکاتەوە و پێداگری لەسەر ئەوە دەکات کە باشە، سەرەڕای ئەوەی شوێنی برینی پێوە دیارە، پێویستە چی بکەیت؟", AnswerA: "هیچ کارم پێی نیە و یارمەتی نادەم.", AnswerB: "ڕێز لە بڕیارەکەی دەگرم، بەڵام پێشنیار دەکەم بە زوترین کات پزیشک ببینێت؟", AnswerC: "بێ گوێدانە قسەکانی کارەکانی بۆ دەکەم.", Correct: "B" },
+            { Question: "کام لومانە نیشانەی بەرکەوتنی زەبر نیە بە مێشک، دوای ڕوداوی هاتوچۆ؟", AnswerA: "زیادبونی وزە.", AnswerB: "هەناسەدانی توند.", AnswerC: "کەمبونی وزە.", Correct: "A" },
+            { Question: "کەی پێویستە کەسێکی بریندار لە شوێنی ڕوداوەکە بگوازیتەوە؟", AnswerA: "لەهەر کاتێک بێت.", AnswerB: "ئەگەر قوربانیەکە داوای کرد.", AnswerC: "ئەگەر مەترسیەکی ڕاستەوخۆ هەبێت وەک ئاگر.", Correct: "C" },
+
+            /* پرسیارەکانی ئاگر و سەلامەتی */
+            { Question: "پۆلێنی ماددەکانی جۆری A ئەمانە لەخۆ دەگرێت:", AnswerA: "ماددە زوو گڕ گرتوەکان.", AnswerB: "کاغەز و تەختە و قەماش.", AnswerC: "سوتەمەنیەکان.", Correct: "B" },
+            { Question: "پۆلێنی ماددەکانی جۆری B ئەمانە لەخۆ دەگرێت:", AnswerA: "بەنزین و گازوایل و نەوت.", AnswerB: "کاغەز و تەختە و قەماش.", AnswerC: "چێشتخانە.", Correct: "A" },
+            { Question: "پۆلێنی ماددەکانی جۆری C ئەمانە لەخۆ دەگرێت:", AnswerA: "مەگنسیۆم.", AnswerB: "ئامێرە ئەلیکتڕۆنی و کارەباییەکان.", AnswerC: "ماددە سوتەمەنیەکان.", Correct: "B" },
+            { Question: "پۆلێنی ماددەکانی جۆری D ئەمانە لەخۆ دەگرێت:", AnswerA: "ماددە سوتەمەنیەکان.", AnswerB: "ئامێرە کارەباییەکان.", AnswerC: "ماددە کانزاییەکان، مەگنسیۆم، لیثیۆم، تیتانیۆم، کالیسیۆم.", Correct: "C" },
+            { Question: "ئامێری ئاگر کوژێنەوەی دەستی جۆری co2 گونجاوە بۆ کوژاندنەوەی ئاگری:", AnswerA: "ئامێرە کارەباییەکان.", AnswerB: "نەوت و گازوایل و بەنزین.", AnswerC: "هیچکامیان.", Correct: "B" },
+            { Question: "ئامێری ئاگر کوژێنەوەی دەستی جۆری فۆم گونجاوە بۆ کوژاندنەوەی ئاگری:", AnswerA: "ماددە سوتەمەنیەکان.", AnswerB: "ئامێرە ئەلیکتڕۆنی و کارەباییەکان.", AnswerC: "هیچکامیان.", Correct: "B" },
+            { Question: "باشترین ڕێگا بۆ کوژاندنەوەی ئاگری ڕۆن و مەنجەڵی چێشت لێنان بریتیە لە:", AnswerA: "بە ئاو دەیکەژێنمەوە.", AnswerB: "بەتانی ئاگر کوژێنەوە.", AnswerC: "هیچکامیان.", Correct: "B" },
+            { Question: "ئامێری ئاگر کوژێنەوەی دەستی لە جۆری ئاو جیا دەکرێتەوە بە ڕەنگی:", AnswerA: "سوور.", AnswerB: "شین.", AnswerC: "سەوز.", Correct: "A" },
+            { Question: "لەکاتی کوژاندنەوەی ئاگر پێویستە پڕژاندنی ئاڕاستەی ئامێری ئاگر کوژێنەوەی دەستی بەرەو:", AnswerA: "سەرەوەی ئاگرەکە.", AnswerB: "بنکەی ئاگر.", AnswerC: "بەهەڕەمەکی بەکاری دێنم.", Correct: "B" },
+            { Question: "لەکاتی بوونی لافاو پێویستە ئۆتۆمبێل لەناوچەی نوقومبوو بە ئاو:", AnswerA: "بەهێواشی لێدەخوڕم.", AnswerB: "نابێت لێبوخوڕێت.", AnswerC: "بەخێرایی لێدەخوڕم بۆ ئەوەی ڕزگارم بێت.", Correct: "B" },
+            { Question: "لەکاتی بونی لێچونی سوتەمەنی یان تێکچونی وایەرەکان لە ئۆتۆمبێل، پێویستە کاری چاککردنەوە ئەنجامبدرێت لەلایەن:", AnswerA: "کەسانی شارەزا.", AnswerB: "لەگەڵ دراوسێکەمان.", AnswerC: "خۆم و هاوڕێکەم.", Correct: "A" },
+            { Question: "لە وەرزی گەرمادا شۆفێری غازی شل پێویستە کاری بارکردن و بەتاڵکردنەوە ئەنجام بدات لە کاتی:", AnswerA: "بەیانیان.", AnswerB: "شەوان.", AnswerC: "نیوەڕۆیان.", Correct: "B" },
+            { Question: "لەکاتی دروست بونی ئاگر پێویستە دەست بەجێ پەیوەندی بە ژمارە تەلەفۆنی بەرگری شارستانی بکرێت کە ژمارەکەی:", AnswerA: "104", AnswerB: "106", AnswerC: "115", Correct: "C" },
+            { Question: "یەکەم شت کە پێویستە بیکەیت ئەگەر هەستت بە ئاگرکەوتنەوە کرد لە ئۆتۆمبێلەکەتدا لە کاتی لێخوڕیندا ئەوەیە:", AnswerA: "لەکەناری ڕێگاکە بوەستیت و بزوێنەر بکوژێنیتەوە.", AnswerB: "خیرایت زیاد بکە.", AnswerC: "بە هێواشی بەردەوام دەبم لە لێخوڕین.", Correct: "A" },
+            { Question: "یەکێک لە نیشانەکانی ئاگادارکردنەوەی ئەگەری ئاگرکەوتنەوەی ئۆتۆمبێل بریتییە لە :", AnswerA: "زیاد بوونی ڕۆن.", AnswerB: "گەرم داهاتنی تایەکان.", AnswerC: "بەرز بونەوەی پلەی گەرمی بزوێنەر.", Correct: "C" },
+            { Question: "یەکێک لە هۆکارەکانی ئاگر کەوتنەوە لە ئۆتۆمبێل بریتییە لە:", AnswerA: "زۆری بەنزین لە تانکی ئۆتۆمبێلەکە.", AnswerB: "کامی بەنزین لە تانکی ئۆتۆمبێلەکە.", AnswerC: "لەکارکەوتنی کارەبایی.", Correct: "C" },
+            { Question: "مەبەست لە هەڵواسینی هێمای (UN Number)لە تانکەری گواستنەوەی سوتەمەنی:", AnswerA: "بۆ جوانی ئۆتۆمبێلەکان.", AnswerB: "ناسینەوەی ماددەی ناو تانکەر و مەترسیەکانی.", AnswerC: "هیچکامیان.", Correct: "B" },
+            { Question: "تانکەری گواستنەوەی غازی شل پێویستە پاڕک بکرێت لە:", AnswerA: "گەراجی داخراو.", AnswerB: "گەراجی کراوە کە هەوا گۆڕکێی هەبێ.", AnswerC: "گەراجێک هەوا گۆڕکێی نەبێت.", Correct: "B" },
+            { Question: "لە کاتی بەتاڵکردنی غازی شل پێویستە دووربێت لە هەر سەرچاوەیەکی گەرمی کەمتر نەبێت لە:", AnswerA: "شەش مەتر.", AnswerB: "چوار مەتر.", AnswerC: "هەشت مەتر.", Correct: "C" },
+            { Question: "ئەگەر ژنێکی دوگیان توشی ڕوداوێکی ئۆتۆمبێل بوبێت، باشترین یارمەتی چیە؟", AnswerA: "دڵنیایی دەدەم لەوەی کە ئاسودەبێت و پەیوەندی بە تیمی فریاگوزاریەوە دەکەم.", AnswerB: "ڕایدەکێشمە سەر زەوی.", AnswerC: "هیچ پەیوەندی بەمنەوە نیە.", Correct: "A" },
+            { Question: "ڕەگەزە سەرەکیاکانی دروست بونی ئاگر بریتین لە ؟", AnswerA: "ئاو و هەوا و خۆڵ.", AnswerB: "گەرمی و ئۆکسجین و ماددە.", AnswerC: "ڕوناکی و کارەبا و ئۆکسجین.", Correct: "B" },
+            { Question: "لەکاتی کوژاندنەوەی ئاگر پێویستە بوەستێن بە؟", AnswerA: "ئاڕاستەی با.", AnswerB: "پێچەوانەی ئاڕاستەی با.", AnswerC: "ڕوەو خۆر.", Correct: "A" }
+        ];
+
+        let questions = [];
+
+        function prepareQuizQuestions() {
+            const shuffled = [...allQuestions];
+
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+
+            questions = shuffled.slice(0, 50);
+        }
+
+        let currentQuestion = 0;
+        let score = 0;
+        let unanswered = 0;
+        let selectedAnswer = false;
+        let timeLeft = 60;
+        let timerInterval;
+
+        const questionElement = document.getElementById("question");
+        const answersElement = document.getElementById("answers");
+        const nextBtn = document.getElementById("nextBtn");
+        const timerElement = document.getElementById("timer");
+        const progressElement = document.getElementById("progress");
+        const questionImageContainer = document.getElementById("questionImageContainer");
+        const questionImage = document.getElementById("questionImage");
+        const quizArea = document.getElementById("quizArea");
+        const resultArea = document.getElementById("resultArea");
+        const finalScore = document.getElementById("finalScore");
+        const resultInfo = document.getElementById("resultInfo");
+
+        function showQuestion() {
+            clearInterval(timerInterval);
+
+            selectedAnswer = false;
+            nextBtn.disabled = true;
+            timeLeft = 60;
+            timerElement.textContent = timeLeft;
+            timerElement.classList.remove("warning");
+
+            const q = questions[currentQuestion];
+
+            progressElement.textContent =
+                `پرسیاری ${currentQuestion + 1} لە ${questions.length}`;
+
+            questionElement.textContent = q.Question;
+
+            questionImage.onerror = function () {
+                questionImageContainer.style.display = "none";
+            };
+
+            if (q.Image) {
+                questionImageContainer.style.display = "block";
+                questionImage.src = q.Image;
+                questionImage.alt = q.Question;
+            } else {
+                questionImage.removeAttribute("src");
+                questionImageContainer.style.display = "none";
+            }
+
+            answersElement.innerHTML = "";
+
+            ["A", "B", "C"].forEach(key => {
+                const button = document.createElement("button");
+                button.className = "answer";
+                button.textContent = key + " ـ " + (q["Answer" + key] || "");
+                button.onclick = () => selectAnswer(key, button);
+                answersElement.appendChild(button);
+            });
+
+            nextBtn.textContent =
+                currentQuestion === questions.length - 1
+                    ? "ئەنجامەکان"
+                    : "پرسیاری دواتر ←";
+
+            startTimer();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+
+                if (timeLeft <= 10) {
+                    timerElement.classList.add("warning");
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+
+                    if (!selectedAnswer) {
+                        unanswered++;
+                        selectedAnswer = true;
+                        disableAnswers();
+                        setTimeout(nextQuestion, 400);
+                    }
+                }
+            }, 1000);
+        }
+
+        function selectAnswer(answer, button) {
+            if (selectedAnswer) return;
+
+            selectedAnswer = true;
+            clearInterval(timerInterval);
+
+            const correctAnswer = questions[currentQuestion].Correct;
+            const allAnswers = document.querySelectorAll(".answer");
+
+            if (answer === correctAnswer) {
+                score++;
+                button.classList.add("correct");
+            } else {
+                button.classList.add("wrong");
+
+                allAnswers.forEach(btn => {
+                    if (btn.textContent.substring(0, 1) === correctAnswer) {
+                        btn.classList.add("correct");
+                    }
+                });
+            }
+
+            disableAnswers();
+            nextBtn.disabled = false;
+        }
+
+        function disableAnswers() {
+            document.querySelectorAll(".answer").forEach(button => {
+                button.disabled = true;
+            });
+        }
+
+        nextBtn.addEventListener("click", () => {
+            if (selectedAnswer) {
+                nextQuestion();
+            }
+        });
+
+        function nextQuestion() {
+            clearInterval(timerInterval);
+
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            clearInterval(timerInterval);
+
+            quizArea.style.display = "none";
+            resultArea.style.display = "block";
+
+            finalScore.textContent = `${score} / ${questions.length}`;
+
+            const wrong = questions.length - score - unanswered;
+
+            resultInfo.innerHTML = `
+            <div>✅ وەڵامی ڕاست: <strong>${score}</strong></div>
+            <div>❌ وەڵامی هەڵە: <strong>${wrong}</strong></div>
+            <div>⏰ بێ وەڵام: <strong>${unanswered}</strong></div>
+            <div>📊 کۆی پرسیارەکان: <strong>${questions.length}</strong></div>
+        `;
+        }
+
+        function restartQuiz() {
+            clearInterval(timerInterval);
+
+            currentQuestion = 0;
+            score = 0;
+            unanswered = 0;
+            selectedAnswer = false;
+
+            prepareQuizQuestions();
+
+            resultArea.style.display = "none";
+            quizArea.style.display = "block";
+
+            showQuestion();
+        }
+
+        function goHome() {
+            window.location.href = "index.html";
+        }
+
+        prepareQuizQuestions();
+        showQuestion();
+    </script>
+
+</body>
+</html>
